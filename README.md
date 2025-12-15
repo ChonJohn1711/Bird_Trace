@@ -31,7 +31,7 @@ Lưu ý: Cơ chế nhận biết và chuyển đổi phụ thuộc vào code fro
 Yêu cầu: Python 3.10+ (khuyến nghị)
 
 ```bash
-cd birdflight_demo
+cd Bird_Trace
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
@@ -133,6 +133,3 @@ Nếu thiếu 2 file này, demo có thể vẫn chạy model nhưng bỏ qua sca
 * `POST /api/predict`: chạy dự đoán
 
 Gợi ý: nếu dùng FastAPI, có thể kiểm tra OpenAPI tại `/docs` để đảm bảo README khớp schema request/response.
-
-```
-```
