@@ -127,8 +127,8 @@ Backend sẽ tự tìm:
 
 ### Artifacts (đã lưu) — tải về
 
-* preprocessing: [https://drive.google.com/file/d/1Ea4Vu8Tn_w_buWuPhX0AG9SyCEaf_o8a/view?usp=sharing](here)
-* scaler_target: [https://drive.google.com/file/d/1mxfsw5o5RcavgJ_8x98h4EkJX0IkNI6H/view?usp=sharing](here)
+* preprocessing: [here](https://drive.google.com/file/d/1Ea4Vu8Tn_w_buWuPhX0AG9SyCEaf_o8a/view?usp=sharing)
+* scaler_target: [here](https://drive.google.com/file/d/1mxfsw5o5RcavgJ_8x98h4EkJX0IkNI6H/view?usp=sharing)
 
 Nếu thiếu 2 file này, demo vẫn chạy model nhưng **bỏ qua scaling/inverse** (và hiển thị ghi chú trong UI).
 
