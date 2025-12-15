@@ -20,11 +20,11 @@ Frontend tự chọn cách render theo dữ liệu:
 - `models/`: model + preprocessing artifacts (scaler/encoder)
 
 ## Model (đã train) — tải về
-- LinearRegression_model_48-24: https://drive.google.com/file/d/18PwyHzJKXKjCZi7bmIdFX3YCRUK7_eG8/view?usp=sharing
-- KNN_model_48-24: https://drive.google.com/file/d/1GoMDA2_zW-Sp1GqqvcrjbWZw6p5PjDep/view?usp=sharing
-- MLP_model_48-24: https://drive.google.com/file/d/145zxd41g_gEJZiEmMWOpZnOseXCQ5qgY/view?usp=sharing
-- RandomForest_model_48-24: https://drive.google.com/file/d/1_rpf9QF_q8ACAAxK-6AUgi3FKyCC-uFF/view?usp=sharing
-- XGBoost_model_48-24: https://drive.google.com/file/d/1Uah9DVLhmp6MxZrLDxYiHpqVSEyYlf8W/view?usp=sharing
+- LinearRegression_model_48-24: [here](https://drive.google.com/file/d/18PwyHzJKXKjCZi7bmIdFX3YCRUK7_eG8/view?usp=sharing)
+- KNN_model_48-24: [here](https://drive.google.com/file/d/1GoMDA2_zW-Sp1GqqvcrjbWZw6p5PjDep/view?usp=sharing)
+- MLP_model_48-24: [here](https://drive.google.com/file/d/145zxd41g_gEJZiEmMWOpZnOseXCQ5qgY/view?usp=sharing)
+- RandomForest_model_48-24: [here](https://drive.google.com/file/d/1_rpf9QF_q8ACAAxK-6AUgi3FKyCC-uFF/view?usp=sharing)
+- XGBoost_model_48-24: [here](https://drive.google.com/file/d/1Uah9DVLhmp6MxZrLDxYiHpqVSEyYlf8W/view?usp=sharing)
 
 ## Chạy local
 Yêu cầu: **Python 3.10+** (khuyến nghị)
