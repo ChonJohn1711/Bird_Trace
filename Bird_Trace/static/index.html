@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Demo dự đoán đường chim bay</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="title">
+      <h1>Demo dự đoán đường chim bay</h1>
+      <p class="subtitle">Input: 48h lịch sử (x_m, y_m + yếu tố ảnh hưởng). Output: dự đoán 24h tiếp theo.</p>
+    </div>
+    <div class="status" id="status">Đang kiểm tra server...</div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <h2>Dữ liệu đầu vào</h2>
+
+      <div class="row">
+        <button id="btnSample" class="btn">Tạo dữ liệu mẫu (48h)</button>
+        <label class="file">
+          <input id="fileInput" type="file" accept=".csv" />
+          <span>Hoặc tải CSV</span>
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="label">Horizon dự đoán (giờ)</label>
+        <input id="horizon" type="number" min="1" max="168" value="24" />
+      </div>
+
+      <div class="row">
+        <label class="label">Model (từ thư mục <code>models</code>)</label>
+        <select id="modelSelect"></select>
+      </div>
+
+      <div class="row">
+        <button id="btnPredict" class="btn primary">Chạy dự đoán</button>
+      </div>
+
+      <div class="notes">
+        <h3>Ghi chú</h3>
+        <ul id="notes"></ul>
+      </div>
+
+      <div class="hint">
+        <details>
+          <summary>CSV cần cột gì?</summary>
+          <p>
+            Nếu bạn dùng model đã train theo pipeline bạn gửi (INPUT_WINDOW=48, FORECAST_HORIZON=24) thì mỗi dòng lịch sử nên có các cột sau:
+          </p>
+          <p>
+            <code>timestamp</code>, <code>external-temperature</code>, <code>ground-speed</code>, <code>height-above-msl</code>, <code>gls:light-level</code>,
+            <code>sin_heading</code>, <code>cos_heading</code>, <code>sin_hour</code>, <code>cos_hour</code>, <code>sin_day</code>, <code>cos_day</code>,
+            <code>sin_month</code>, <code>cos_month</code>, <code>distance</code>, <code>time_of_day</code>, <code>season</code>, <code>x_m</code>, <code>y_m</code>.
+          </p>
+          <p>
+            Trang demo sẽ cố gắng tự sinh <code>sin_*</code> từ <code>timestamp</code> và tự tính <code>distance</code> từ <code>x_m/y_m</code> nếu thiếu.
+            Nếu bạn muốn chạy đúng như lúc train (scaling + label encoding), hãy copy các file scaler/encoder vào thư mục <code>models</code> (xem README).
+          </p>
+          <p>
+            Bản đồ dùng Leaflet + lớp nền OpenStreetMap (cần internet). Nếu <code>x_m/y_m</code> nằm trong khoảng Web Mercator, trang sẽ tự chuyển đổi sang <code>lat/lon</code> để hiển thị trên bản đồ.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <section class="mapWrap">
+      <div id="map"></div>
+      <div class="overlay" id="overlay" aria-live="polite">
+        <div class="overlayTitle">Kết quả</div>
+        <div class="kv" id="kv">
+          <div class="kvRow"><span class="k">Model</span><span class="v" id="kvModel">-</span></div>
+          <div class="kvRow"><span class="k">Horizon</span><span class="v" id="kvHorizon">-</span></div>
+          <div class="kvRow"><span class="k">Lịch sử</span><span class="v" id="kvHist">-</span></div>
+          <div class="kvRow"><span class="k">Thời gian</span><span class="v" id="kvTime">-</span></div>
+          <div class="kvRow"><span class="k">Nhiệt độ cuối</span><span class="v" id="kvTemp">-</span></div>
+          <div class="kvRow"><span class="k">Tốc độ cuối</span><span class="v" id="kvGS">-</span></div>
+          <div class="kvRow"><span class="k">Ánh sáng cuối</span><span class="v" id="kvLight">-</span></div>
+          <div class="kvRow"><span class="k">Độ cao cuối</span><span class="v" id="kvAlt">-</span></div>
+          <div class="kvRow"><span class="k">time_of_day / season</span><span class="v" id="kvLabel">-</span></div>
+          <div class="kvRow"><span class="k">Quãng đường dự đoán</span><span class="v" id="kvDist">-</span></div>
+          <div class="kvRow"><span class="k">Tốc độ TB (xấp xỉ)</span><span class="v" id="kvSpeed">-</span></div>
+          <div class="kvRow"><span class="k">Chế độ hiển thị</span><span class="v" id="kvMode">-</span></div>
+        </div>
+        <div class="overlayHint" id="overlayHint"></div>
+      </div>
+      <div class="controls">
+        <button id="btnPlay" class="btn">Play</button>
+        <button id="btnPause" class="btn">Pause</button>
+        <label class="label">Tốc độ</label>
+        <input id="speed" type="range" min="0.25" max="4" step="0.25" value="1" />
+        <span id="speedVal">1x</span>
+        <button id="btnReset" class="btn">Reset view</button>
+      </div>
+      <div class="legend">
+        <span class="dot hist"></span> Lịch sử (48h)
+        <span class="dot pred"></span> Dự đoán (24h)
+        <span class="dot marker"></span> Chim (animation)
+      </div>
+
+      <div class="result">
+        <div class="resultHead">
+          <h3>Bảng điểm dự đoán (preview)</h3>
+          <div class="resultActions">
+            <button id="btnDownloadPred" class="btn">Tải CSV dự đoán</button>
+          </div>
+        </div>
+        <div class="tableWrap">
+          <table class="table" id="predTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>timestamp</th>
+                <th>x_m</th>
+                <th>y_m</th>
+                <th>lat</th>
+                <th>lon</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Backend: FastAPI • Frontend: Leaflet</span>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
