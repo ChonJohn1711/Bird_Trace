@@ -1,23 +1,24 @@
-````md
 # Bird Flight Path Prediction Demo (Web)
 
-Demo web dự đoán đường bay chim từ dữ liệu lịch sử, kèm animation marker chạy theo quỹ đạo dự đoán.
+Ứng dụng web dự đoán đường bay chim từ dữ liệu lịch sử và hiển thị quỹ đạo dự đoán kèm animation (marker chạy theo đường bay).
 
 ## Mục tiêu
-- **Input:** 48 giờ lịch sử (`x_m`, `y_m` + các yếu tố ảnh hưởng)
-- **Output:** dự đoán vị trí **24 giờ** tiếp theo
-- **UI:** hiển thị đường bay + animation
+- Input: 48 giờ dữ liệu lịch sử (`x_m`, `y_m` và các yếu tố ảnh hưởng).
+- Output: dự đoán vị trí 24 giờ tiếp theo.
+- UI: hiển thị đường bay và animation.
 
 ## Chế độ hiển thị bản đồ
-Frontend tự chọn cách render theo dữ liệu:
-- Nếu `x_m/y_m` giống **Web Mercator** (|x|,|y| ≤ 20037508) → chuyển sang `lat/lon` và hiển thị trên **OpenStreetMap** (cần internet).
-- Nếu `x_m/y_m` trông giống **lat/lon** (độ) → hiển thị trực tiếp.
-- Nếu không khớp → fallback sang mặt phẳng XY (**CRS.Simple**).
+Frontend lựa chọn cách render theo dạng dữ liệu đầu vào:
+- Nếu `x_m/y_m` giống Web Mercator (|x|, |y| ≤ 20037508) thì chuyển sang lat/lon và hiển thị trên OpenStreetMap (cần internet).
+- Nếu `x_m/y_m` giống lat/lon (đơn vị độ) thì hiển thị trực tiếp.
+- Nếu không khớp, fallback sang mặt phẳng XY (CRS.Simple).
+
+Lưu ý: Cơ chế nhận biết và chuyển đổi phụ thuộc vào code frontend/backend. Hãy đối chiếu với `static/` và `app.py` để đảm bảo khớp 100%.
 
 ## Cấu trúc thư mục
 - `app.py`: FastAPI backend + serve static frontend
 - `static/`: HTML/CSS/JS (Leaflet)
-- `models/`: model + preprocessing artifacts (scaler/encoder)
+- `models/`: model và preprocessing artifacts (scaler/encoder)
 
 ## Model (đã train) — tải về
 - LinearRegression_model_48-24: [here](https://drive.google.com/file/d/18PwyHzJKXKjCZi7bmIdFX3YCRUK7_eG8/view?usp=sharing)
@@ -27,7 +28,7 @@ Frontend tự chọn cách render theo dữ liệu:
 - XGBoost_model_48-24: [here](https://drive.google.com/file/d/1Uah9DVLhmp6MxZrLDxYiHpqVSEyYlf8W/view?usp=sharing)
 
 ## Chạy local
-Yêu cầu: **Python 3.10+** (khuyến nghị)
+Yêu cầu: Python 3.10+ (khuyến nghị)
 
 ```bash
 cd birdflight_demo
@@ -42,27 +43,27 @@ Mở: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ## Dùng model thật (joblib/pickle)
 
-Backend sẽ thử load model trong `models/` theo thứ tự ưu tiên:
+Backend có thể hỗ trợ load model từ thư mục `models/` (cần đối chiếu `app.py` để xác minh chính xác thứ tự ưu tiên và điều kiện fallback):
 
-1. `*.joblib`
-2. `*.pkl`
+* `*.joblib`
+* `*.pkl`
 
-Nếu inference lỗi, backend sẽ fallback sang **heuristic predictor** để demo vẫn hoạt động.
+Nếu inference lỗi, ứng dụng có thể fallback sang heuristic predictor để demo vẫn hoạt động (cần đối chiếu code để xác minh).
 
 ## Lỗi “288 vs 816 features” (nguyên nhân)
 
-Pipeline tạo input cửa sổ 48 giờ rồi **flatten**:
+Pipeline tạo input theo cửa sổ 48 giờ và flatten:
 
-* Mỗi timestep có `features + target` = 15 + 2 = **17** cột
+* Mỗi timestep gồm `features + target` = 15 + 2 = 17 cột
 * `INPUT_WINDOW = 48`
 
-⇒ input cho model dạng ML cổ điển: **48 × 17 = 816 features**
+Input cho model dạng ML cổ điển: 48 × 17 = 816 features
 
-Bản demo cũ chỉ gửi 6 cột/timestep ⇒ **48 × 6 = 288**.
+Bản demo cũ chỉ gửi 6 cột / timestep: 48 × 6 = 288
 
 ## Schema input (đúng thứ tự pipeline)
 
-Mỗi dòng lịch sử được chuẩn hóa theo đúng `df[features + target]`:
+Mỗi dòng lịch sử được chuẩn hóa theo thứ tự `df[features + target]`:
 
 1. `external_temperature`
 2. `ground_speed`
@@ -82,29 +83,22 @@ Mỗi dòng lịch sử được chuẩn hóa theo đúng `df[features + target]
 16. `x_m`
 17. `y_m`
 
-Demo lấy **48 dòng cuối**, padding nếu thiếu, rồi flatten thành `(1, 816)`.
+Demo lấy 48 dòng cuối, padding nếu thiếu, rồi flatten thành shape `(1, 816)` (cần đối chiếu code để xác minh padding rule).
 
 ## Upload CSV
 
-CSV có thể dùng header giống dataset (chấp nhận cả `-` và `:`), ví dụ:
+CSV có thể dùng header giống dataset. Ứng dụng có thể hỗ trợ normalize tên cột (ví dụ chấp nhận `-` và `:`), nhưng cần đối chiếu code để xác minh.
 
-* `external-temperature`, `ground-speed`, `height-above-msl`, `gls:light-level`
-
-Khuyến nghị tối thiểu có:
+Khuyến nghị tối thiểu:
 
 * `timestamp`, `x_m`, `y_m`
 
-Nếu thiếu các cột sin/cos, demo sẽ tự sinh từ `timestamp`:
-
-* `sin_hour/cos_hour`: chu kỳ 24
-* `sin_day/cos_day`: chu kỳ 30 (theo mẫu bạn đưa)
-* `sin_month/cos_month`: chu kỳ 12
-
-Nếu thiếu `distance`, demo tự tính từ `x_m/y_m`.
+Nếu thiếu các cột sin/cos, ứng dụng có thể tự sinh từ `timestamp` (cần đối chiếu code để xác minh công thức và chu kỳ).
+Nếu thiếu `distance`, ứng dụng có thể tự tính từ `x_m/y_m` (cần đối chiếu code để xác minh cách tính).
 
 ## Preprocessing (để khớp lúc train)
 
-Pipeline bạn gửi dùng:
+Pipeline (theo mô tả) sử dụng:
 
 * StandardScaler: `external-temperature`, `gls:light-level`, `distance`
 * RobustScaler: `ground-speed`, `height-above-msl`
@@ -125,18 +119,20 @@ Backend sẽ tự tìm:
 * `models/preprocessing.joblib`
 * `models/scaler_target.joblib`
 
+Nếu thiếu 2 file này, demo có thể vẫn chạy model nhưng bỏ qua scaling/inverse (và hiển thị ghi chú trong UI). Cần đối chiếu code để xác minh hành vi.
+
 ### Artifacts (đã lưu) — tải về
 
 * preprocessing: [here](https://drive.google.com/file/d/1Ea4Vu8Tn_w_buWuPhX0AG9SyCEaf_o8a/view?usp=sharing)
 * scaler_target: [here](https://drive.google.com/file/d/1mxfsw5o5RcavgJ_8x98h4EkJX0IkNI6H/view?usp=sharing)
-
-Nếu thiếu 2 file này, demo vẫn chạy model nhưng **bỏ qua scaling/inverse** (và hiển thị ghi chú trong UI).
 
 ## API
 
 * `GET /api/health`: trạng thái model + preprocessing artifacts
 * `GET /api/sample`: dữ liệu mẫu 48h
 * `POST /api/predict`: chạy dự đoán
+
+Gợi ý: nếu dùng FastAPI, có thể kiểm tra OpenAPI tại `/docs` để đảm bảo README khớp schema request/response.
 
 ```
 ```
