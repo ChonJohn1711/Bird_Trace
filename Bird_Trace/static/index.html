@@ -1,139 +1,195 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Demo dự đoán đường chim bay</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="/static/style.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dự đoán đường chim bay</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 </head>
+
 <body>
-  <header class="topbar">
-    <div class="title">
-      <h1>Demo dự đoán đường chim bay</h1>
-      <p class="subtitle">Input: 48h lịch sử (x_m, y_m + yếu tố ảnh hưởng). Output: dự đoán 24h tiếp theo.</p>
-    </div>
-    <div class="status" id="status">Đang kiểm tra server...</div>
-  </header>
-
-  <main class="layout">
-    <section class="panel">
-      <h2>Dữ liệu đầu vào</h2>
-
-      <div class="row">
-        <button id="btnSample" class="btn">Tạo dữ liệu mẫu (48h)</button>
-        <label class="file">
-          <input id="fileInput" type="file" accept=".csv" />
-          <span>Hoặc tải CSV</span>
-        </label>
-      </div>
-
-      <div class="row">
-        <label class="label">Horizon dự đoán (giờ)</label>
-        <input id="horizon" type="number" min="1" max="168" value="24" />
-      </div>
-
-      <div class="row">
-        <label class="label">Model (từ thư mục <code>models</code>)</label>
-        <select id="modelSelect"></select>
-      </div>
-
-      <div class="row">
-        <button id="btnPredict" class="btn primary">Chạy dự đoán</button>
-      </div>
-
-      <div class="notes">
-        <h3>Ghi chú</h3>
-        <ul id="notes"></ul>
-      </div>
-
-      <div class="hint">
-        <details>
-          <summary>CSV cần cột gì?</summary>
-          <p>
-            Nếu bạn dùng model đã train theo pipeline bạn gửi (INPUT_WINDOW=48, FORECAST_HORIZON=24) thì mỗi dòng lịch sử nên có các cột sau:
-          </p>
-          <p>
-            <code>timestamp</code>, <code>external-temperature</code>, <code>ground-speed</code>, <code>height-above-msl</code>, <code>gls:light-level</code>,
-            <code>sin_heading</code>, <code>cos_heading</code>, <code>sin_hour</code>, <code>cos_hour</code>, <code>sin_day</code>, <code>cos_day</code>,
-            <code>sin_month</code>, <code>cos_month</code>, <code>distance</code>, <code>time_of_day</code>, <code>season</code>, <code>x_m</code>, <code>y_m</code>.
-          </p>
-          <p>
-            Trang demo sẽ cố gắng tự sinh <code>sin_*</code> từ <code>timestamp</code> và tự tính <code>distance</code> từ <code>x_m/y_m</code> nếu thiếu.
-            Nếu bạn muốn chạy đúng như lúc train (scaling + label encoding), hãy copy các file scaler/encoder vào thư mục <code>models</code> (xem README).
-          </p>
-          <p>
-            Bản đồ dùng Leaflet + lớp nền OpenStreetMap (cần internet). Nếu <code>x_m/y_m</code> nằm trong khoảng Web Mercator, trang sẽ tự chuyển đổi sang <code>lat/lon</code> để hiển thị trên bản đồ.
-          </p>
-        </details>
-      </div>
-    </section>
-
-    <section class="mapWrap">
-      <div id="map"></div>
-      <div class="overlay" id="overlay" aria-live="polite">
-        <div class="overlayTitle">Kết quả</div>
-        <div class="kv" id="kv">
-          <div class="kvRow"><span class="k">Model</span><span class="v" id="kvModel">-</span></div>
-          <div class="kvRow"><span class="k">Horizon</span><span class="v" id="kvHorizon">-</span></div>
-          <div class="kvRow"><span class="k">Lịch sử</span><span class="v" id="kvHist">-</span></div>
-          <div class="kvRow"><span class="k">Thời gian</span><span class="v" id="kvTime">-</span></div>
-          <div class="kvRow"><span class="k">Nhiệt độ cuối</span><span class="v" id="kvTemp">-</span></div>
-          <div class="kvRow"><span class="k">Tốc độ cuối</span><span class="v" id="kvGS">-</span></div>
-          <div class="kvRow"><span class="k">Ánh sáng cuối</span><span class="v" id="kvLight">-</span></div>
-          <div class="kvRow"><span class="k">Độ cao cuối</span><span class="v" id="kvAlt">-</span></div>
-          <div class="kvRow"><span class="k">time_of_day / season</span><span class="v" id="kvLabel">-</span></div>
-          <div class="kvRow"><span class="k">Quãng đường dự đoán</span><span class="v" id="kvDist">-</span></div>
-          <div class="kvRow"><span class="k">Tốc độ TB (xấp xỉ)</span><span class="v" id="kvSpeed">-</span></div>
-          <div class="kvRow"><span class="k">Chế độ hiển thị</span><span class="v" id="kvMode">-</span></div>
+  <div class="app" id="appRoot">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brandTitle">
+          <span class="brandMark"></span>
+          Dự đoán đường chim bay
         </div>
-        <div class="overlayHint" id="overlayHint"></div>
-      </div>
-      <div class="controls">
-        <button id="btnPlay" class="btn">Play</button>
-        <button id="btnPause" class="btn">Pause</button>
-        <label class="label">Tốc độ</label>
-        <input id="speed" type="range" min="0.25" max="4" step="0.25" value="1" />
-        <span id="speedVal">1x</span>
-        <button id="btnReset" class="btn">Reset view</button>
-      </div>
-      <div class="legend">
-        <span class="dot hist"></span> Lịch sử (48h)
-        <span class="dot pred"></span> Dự đoán (24h)
-        <span class="dot marker"></span> Chim (animation)
+        <div class="brandSub">
+          Chọn thời gian bất kỳ • Hệ thống tự lấy 48h lịch sử và dự đoán 24h tiếp theo
+        </div>
       </div>
 
-      <div class="result">
-        <div class="resultHead">
-          <h3>Bảng điểm dự đoán (preview)</h3>
-          <div class="resultActions">
-            <button id="btnDownloadPred" class="btn">Tải CSV dự đoán</button>
+      <div class="topActions">
+        <div class="status" id="statusBadge">Đang tải…</div>
+        <button id="btnTogglePanel" class="btnIcon" type="button" aria-label="Mở/đóng bảng điều khiển">
+          <span class="iconLines" aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="panel" id="sidePanel">
+        <section class="card">
+          <div class="cardHeader">
+            <h2>Thiết lập</h2>
+            <div class="hint">Dữ liệu được tải tự động</div>
+          </div>
+
+          <div class="formGrid">
+            <div class="formRow">
+              <label for="dtInput">Thời gian</label>
+              <input id="dtInput" type="datetime-local" />
+              <div class="fieldHint">Bạn có thể chọn phút; hệ thống tự xử lý bên trong.</div>
+            </div>
+
+            <div class="formRow">
+              <label for="modelSelect">Model</label>
+              <select id="modelSelect"></select>
+            </div>
+
+            <div class="btnRow">
+              <button id="btnPredict" class="btnPrimary" type="button">
+                <span class="btnSpinner" id="predictSpinner" aria-hidden="true"></span>
+                Predict
+              </button>
+              <a id="btnDownloadXlsx" class="linkBtn" href="#" target="_blank" rel="noreferrer"
+                style="display:none;">Tải Excel</a>
+              <a id="btnDownload" class="linkBtn" href="#" target="_blank" rel="noreferrer" style="display:none;">Tải
+                CSV</a>
+            </div>
+
+            <div class="metaLine" id="datasetInfo"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="cardHeader">
+            <h2>Playback</h2>
+            <div class="hint">Marker chạy liên tục theo đường đi</div>
+          </div>
+
+          <div class="formRow">
+            <label for="speedRange">Tốc độ</label>
+            <div class="rangeRow">
+              <input id="speedRange" type="range" min="0.5" max="4" step="0.5" value="1" />
+              <div class="chip" id="speedLabel">1x</div>
+            </div>
+          </div>
+
+          <div class="formRow inline">
+            <label class="checkRow">
+              <input id="followToggle" type="checkbox" checked />
+              <span>Tự bám theo marker</span>
+            </label>
+          </div>
+
+          <div class="btnRow">
+            <button id="btnPlay" class="btnSecondary" type="button" disabled>Play</button>
+            <button id="btnPause" class="btnGhost" type="button" disabled>Pause</button>
+            <button id="btnResetView" class="btnTertiary" type="button" disabled>Reset view</button>
+          </div>
+        </section>
+
+        <section class="card" id="cardKpi">
+          <div class="cardHeader">
+            <h2>Kết quả nhanh</h2>
+            <div class="headerRight">
+              <div class="hint">Tóm tắt dự đoán 24h</div>
+              <button id="btnToggleKpi" class="btnMini" type="button" aria-label="Thu gọn/mở rộng kết quả nhanh"
+                title="Thu gọn/mở rộng">
+                <span class="caret" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="kpiGrid">
+            <div class="kpi">
+              <div class="kpiLabel">Model</div>
+              <div class="kpiValue" id="kpiModel">—</div>
+            </div>
+            <div class="kpi">
+              <div class="kpiLabel">Điểm lịch sử</div>
+              <div class="kpiValue" id="kpiHistPts">—</div>
+            </div>
+            <div class="kpi">
+              <div class="kpiLabel">Điểm dự đoán</div>
+              <div class="kpiValue" id="kpiPredPts">—</div>
+            </div>
+            <div class="kpi">
+              <div class="kpiLabel">Tổng quãng đường</div>
+              <div class="kpiValue" id="kpiTotalDist">—</div>
+            </div>
+            <div class="kpi">
+              <div class="kpiLabel">TB mỗi bước</div>
+              <div class="kpiValue" id="kpiAvgStep">—</div>
+            </div>
+          </div>
+
+          <div class="legendMini">
+            <span class="legendPill"><span class="dot hist"></span>Lịch sử</span>
+            <span class="legendPill"><span class="dot pred"></span>Dự đoán</span>
+          </div>
+        </section>
+      </aside>
+
+      <section class="mapWrap">
+        <div id="map"></div>
+
+        <div class="mapOverlay">
+          <div class="nowBox" id="nowBox">
+            <div class="nowTitle">Marker</div>
+            <div class="nowLine" id="nowLine">—</div>
+          </div>
+
+          <div class="mapHint">
+            <div class="mapHintTitle">Mẹo</div>
+            <div class="mapHintBody">Di chuột lên datapoint để xem <b>timestamp</b>, <b>lat</b>, <b>lon</b>.</div>
           </div>
         </div>
-        <div class="tableWrap">
-          <table class="table" id="predTable">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>timestamp</th>
-                <th>x_m</th>
-                <th>y_m</th>
-                <th>lat</th>
-                <th>lon</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+      </section>
+    </main>
+
+    <section class="bottomDock">
+      <section class="card">
+        <div class="tabs">
+          <button id="tabNotes" class="tab active" type="button">Ghi chú</button>
+          <button id="tabTable" class="tab" type="button">Dữ liệu dự đoán</button>
         </div>
-      </div>
+
+        <div id="panelNotes" class="tabPanel">
+          <div class="notes" id="notes"></div>
+        </div>
+
+        <div id="panelTable" class="tabPanel hidden">
+          <div class="tableWrap">
+            <table id="predTable">
+              <thead>
+                <tr>
+                  <th>timestamp</th>
+                  <th>x_m</th>
+                  <th>y_m</th>
+                  <th>lat</th>
+                  <th>lon</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </section>
-  </main>
 
-  <footer class="footer">
-    <span>Backend: FastAPI • Frontend: Leaflet</span>
-  </footer>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <div class="toastHost" id="toastHost" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="/static/app.js"></script>
 </body>
+
 </html>
