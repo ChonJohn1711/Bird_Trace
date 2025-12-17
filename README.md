@@ -27,26 +27,6 @@ Lưu ý: Cơ chế nhận biết và chuyển đổi phụ thuộc vào code fro
 - RandomForest_model_48-24: [here](https://drive.google.com/file/d/1_rpf9QF_q8ACAAxK-6AUgi3FKyCC-uFF/view?usp=sharing)
 - XGBoost_model_48-24: [here](https://drive.google.com/file/d/1Uah9DVLhmp6MxZrLDxYiHpqVSEyYlf8W/view?usp=sharing)
 
-## Dùng model thật (joblib/pickle)
-
-Backend có thể hỗ trợ load model từ thư mục `models/` (cần đối chiếu `app.py` để xác minh chính xác thứ tự ưu tiên và điều kiện fallback):
-
-* `*.joblib`
-* `*.pkl`
-
-Nếu inference lỗi, ứng dụng có thể fallback sang heuristic predictor để demo vẫn hoạt động (cần đối chiếu code để xác minh).
-
-## Lỗi “288 vs 816 features” (nguyên nhân)
-
-Pipeline tạo input theo cửa sổ 48 giờ và flatten:
-
-* Mỗi timestep gồm `features + target` = 15 + 2 = 17 cột
-* `INPUT_WINDOW = 48`
-
-Input cho model dạng ML cổ điển: 48 × 17 = 816 features
-
-Bản demo cũ chỉ gửi 6 cột / timestep: 48 × 6 = 288
-
 ## Schema input (đúng thứ tự pipeline)
 
 Mỗi dòng lịch sử được chuẩn hóa theo thứ tự `df[features + target]`:
@@ -133,6 +113,3 @@ Mở: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 * `POST /api/predict`: chạy dự đoán
 
 Gợi ý: nếu dùng FastAPI, có thể kiểm tra OpenAPI tại `/docs` để đảm bảo README khớp schema request/response.
-
-```
-```
