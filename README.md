@@ -27,20 +27,6 @@ Lưu ý: Cơ chế nhận biết và chuyển đổi phụ thuộc vào code fro
 - RandomForest_model_48-24: [here](https://drive.google.com/file/d/1_rpf9QF_q8ACAAxK-6AUgi3FKyCC-uFF/view?usp=sharing)
 - XGBoost_model_48-24: [here](https://drive.google.com/file/d/1Uah9DVLhmp6MxZrLDxYiHpqVSEyYlf8W/view?usp=sharing)
 
-## Chạy local
-Yêu cầu: Python 3.10+ (khuyến nghị)
-
-```bash
-cd Bird_Trace
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-
-pip install -r requirements.txt
-uvicorn app:app --reload
-````
-
-Mở: [http://127.0.0.1:8000](http://127.0.0.1:8000)
-
 ## Dùng model thật (joblib/pickle)
 
 Backend có thể hỗ trợ load model từ thư mục `models/` (cần đối chiếu `app.py` để xác minh chính xác thứ tự ưu tiên và điều kiện fallback):
@@ -126,6 +112,20 @@ Nếu thiếu 2 file này, demo có thể vẫn chạy model nhưng bỏ qua sca
 * preprocessing: [here](https://drive.google.com/file/d/1Ea4Vu8Tn_w_buWuPhX0AG9SyCEaf_o8a/view?usp=sharing)
 * scaler_target: [here](https://drive.google.com/file/d/1mxfsw5o5RcavgJ_8x98h4EkJX0IkNI6H/view?usp=sharing)
 
+## Chạy local
+Yêu cầu: Python 3.10+ (khuyến nghị)
+
+```bash
+cd Bird_Trace
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+
+pip install -r requirements.txt
+uvicorn app:app --reload
+````
+
+Mở: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
 ## API
 
 * `GET /api/health`: trạng thái model + preprocessing artifacts
@@ -133,3 +133,6 @@ Nếu thiếu 2 file này, demo có thể vẫn chạy model nhưng bỏ qua sca
 * `POST /api/predict`: chạy dự đoán
 
 Gợi ý: nếu dùng FastAPI, có thể kiểm tra OpenAPI tại `/docs` để đảm bảo README khớp schema request/response.
+
+```
+```
