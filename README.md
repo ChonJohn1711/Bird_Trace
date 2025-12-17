@@ -22,11 +22,11 @@ Lưu ý: Cơ chế nhận biết và chuyển đổi phụ thuộc vào code fro
 - `models/`: model và preprocessing artifacts (scaler/encoder)
 
 ## Model (đã train) — tải về
-- LinearRegression_model_48-24: [here](https://drive.google.com/file/d/18PwyHzJKXKjCZi7bmIdFX3YCRUK7_eG8/view?usp=sharing)
-- KNN_model_48-24: [here](https://drive.google.com/file/d/1GoMDA2_zW-Sp1GqqvcrjbWZw6p5PjDep/view?usp=sharing)
-- MLP_model_48-24: [here](https://drive.google.com/file/d/145zxd41g_gEJZiEmMWOpZnOseXCQ5qgY/view?usp=sharing)
-- RandomForest_model_48-24: [here](https://drive.google.com/file/d/1_rpf9QF_q8ACAAxK-6AUgi3FKyCC-uFF/view?usp=sharing)
-- XGBoost_model_48-24: [here](https://drive.google.com/file/d/1Uah9DVLhmp6MxZrLDxYiHpqVSEyYlf8W/view?usp=sharing)
+- LinearRegression_model_48-24: [here](https://drive.google.com/file/d/18PwyHzJKXKjCZi7bmIdFX3YCRUK7_eG8/view?usp=sharing).
+- KNN_model_48-24: [here](https://drive.google.com/file/d/1GoMDA2_zW-Sp1GqqvcrjbWZw6p5PjDep/view?usp=sharing).
+- MLP_model_48-24: [here](https://drive.google.com/file/d/145zxd41g_gEJZiEmMWOpZnOseXCQ5qgY/view?usp=sharing).
+- RandomForest_model_48-24: [here](https://drive.google.com/file/d/1_rpf9QF_q8ACAAxK-6AUgi3FKyCC-uFF/view?usp=sharing).
+- XGBoost_model_48-24: [here](https://drive.google.com/file/d/1Uah9DVLhmp6MxZrLDxYiHpqVSEyYlf8W/view?usp=sharing).
 
 ## Schema input (đúng thứ tự pipeline)
 
@@ -64,8 +64,8 @@ Nếu thiếu các cột sin/cos, ứng dụng có thể tự sinh từ `timesta
 Nếu thiếu `distance`, ứng dụng có thể tự tính từ `x_m/y_m` (cần đối chiếu code để xác minh cách tính).
 
 ### Dataset:
-* Dataset (bản gốc) lưu [tại đây](https://drive.google.com/file/d/1kFSOonayoQbVkdbhZ8vR-TPudZuYt24t/view?usp=sharing)
-* Dataset (sau khi đã preprocessing) nhóm sử dụng được lưu [tại đây](https://drive.google.com/file/d/1XxMV9oTMfMGDSckqtW7JoBrMaSRRPLMl/view?usp=sharing)
+* Dataset (bản gốc) lưu [tại đây](https://drive.google.com/file/d/1kFSOonayoQbVkdbhZ8vR-TPudZuYt24t/view?usp=sharing).
+* Dataset (sau khi đã preprocessing) nhóm sử dụng được lưu [tại đây](https://drive.google.com/file/d/1XxMV9oTMfMGDSckqtW7JoBrMaSRRPLMl/view?usp=sharing).
 
 Trong dự án demo này, ưu tiên sử dụng dataset sau khi đã preprocessing.
 
@@ -96,8 +96,8 @@ Nếu thiếu 2 file này, demo có thể vẫn chạy model nhưng bỏ qua sca
 
 ### Artifacts (đã lưu) — tải về
 
-* preprocessing: [here](https://drive.google.com/file/d/1Ea4Vu8Tn_w_buWuPhX0AG9SyCEaf_o8a/view?usp=sharing)
-* scaler_target: [here](https://drive.google.com/file/d/1mxfsw5o5RcavgJ_8x98h4EkJX0IkNI6H/view?usp=sharing)
+* preprocessing: [here](https://drive.google.com/file/d/1Ea4Vu8Tn_w_buWuPhX0AG9SyCEaf_o8a/view?usp=sharing).
+* scaler_target: [here](https://drive.google.com/file/d/1mxfsw5o5RcavgJ_8x98h4EkJX0IkNI6H/view?usp=sharing).
 
 ## Chạy local
 Yêu cầu: Python 3.10+ (khuyến nghị)
