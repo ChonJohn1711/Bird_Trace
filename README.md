@@ -18,6 +18,7 @@ Lưu ý: Cơ chế nhận biết và chuyển đổi phụ thuộc vào code fro
 ## Cấu trúc thư mục
 - `app.py`: FastAPI backend + serve static frontend
 - `static/`: HTML/CSS/JS (Leaflet)
+- `data/`: dataset đường chim bay (csv)
 - `models/`: model và preprocessing artifacts (scaler/encoder)
 
 ## Model (đã train) — tải về
@@ -61,6 +62,12 @@ Khuyến nghị tối thiểu:
 
 Nếu thiếu các cột sin/cos, ứng dụng có thể tự sinh từ `timestamp` (cần đối chiếu code để xác minh công thức và chu kỳ).
 Nếu thiếu `distance`, ứng dụng có thể tự tính từ `x_m/y_m` (cần đối chiếu code để xác minh cách tính).
+
+### Dataset:
+* Dataset (bản gốc) lưu [tại đây](https://drive.google.com/file/d/1kFSOonayoQbVkdbhZ8vR-TPudZuYt24t/view?usp=sharing)
+* Dataset (sau khi đã preprocessing) nhóm sử dụng được lưu [tại đây](https://drive.google.com/file/d/1XxMV9oTMfMGDSckqtW7JoBrMaSRRPLMl/view?usp=sharing)
+
+Trong dự án demo này, ưu tiên sử dụng dataset sau khi đã preprocessing.
 
 ## Preprocessing (để khớp lúc train)
 
