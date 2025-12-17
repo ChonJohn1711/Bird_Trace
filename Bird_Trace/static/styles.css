@@ -1,0 +1,836 @@
+:root {
+  --bg: #070914;
+  --bg2: #0b1020;
+  --surface: rgba(255, 255, 255, 0.07);
+  --surface2: rgba(255, 255, 255, 0.05);
+  --surface3: rgba(0, 0, 0, 0.22);
+  --border: rgba(255, 255, 255, 0.12);
+  --border2: rgba(255, 255, 255, 0.16);
+  --text: #eef1fb;
+  --muted: #aab4cf;
+  --muted2: #7f8aaa;
+
+  --blue: #3b82f6;
+  --blue2: #60a5fa;
+  --green: #16a34a;
+  --green2: #22c55e;
+  --warn: #f59e0b;
+  --err: #fbbf24;
+
+  --shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+  --shadow2: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --radius: 18px;
+}
+
+* {
+  box-sizing: border-box
+}
+
+html,
+body {
+  height: 100%
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 700px at 10% 10%, rgba(34, 197, 94, 0.16), transparent 62%),
+    radial-gradient(1100px 680px at 92% 16%, rgba(59, 130, 246, 0.16), transparent 58%),
+    radial-gradient(900px 650px at 45% 120%, rgba(96, 165, 250, 0.10), transparent 52%),
+    linear-gradient(180deg, var(--bg), var(--bg2));
+}
+
+.app {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 18px
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  padding: 14px 14px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.05));
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+
+.brandTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.brandMark {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: conic-gradient(from 180deg, var(--green2), var(--blue2), var(--green2));
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
+}
+
+.brandSub {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12.8px;
+  line-height: 1.35;
+  max-width: 760px
+}
+
+.topActions {
+  display: flex;
+  gap: 10px;
+  align-items: center
+}
+
+.status {
+  padding: 9px 12px;
+  border: 1px solid var(--border2);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.18);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.btnIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.18);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform .06s ease, background .15s ease, border-color .15s ease;
+}
+
+.btnIcon:hover {
+  background: rgba(255, 255, 255, 0.07)
+}
+
+.btnIcon:active {
+  transform: translateY(1px)
+}
+
+.iconLines {
+  display: inline-block;
+  width: 18px;
+  height: 12px;
+  position: relative;
+}
+
+.iconLines::before,
+.iconLines::after,
+.iconLines {
+  background: transparent;
+}
+
+.iconLines::before,
+.iconLines::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 999px;
+}
+
+.iconLines::before {
+  top: 1px
+}
+
+.iconLines::after {
+  bottom: 1px
+}
+
+/* Layout */
+.layout {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 14px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px
+}
+
+.card {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04));
+  box-shadow: var(--shadow2);
+  padding: 12px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px
+}
+
+.cardHeader h2 {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.25px
+}
+
+.hint {
+  color: var(--muted2);
+  font-size: 12px
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px
+}
+
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px
+}
+
+.formRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px
+}
+
+.formRow.inline {
+  margin-top: -2px
+}
+
+label {
+  font-size: 12px;
+  color: var(--muted)
+}
+
+.fieldHint {
+  font-size: 11.5px;
+  color: var(--muted2);
+  line-height: 1.3
+}
+
+input,
+select {
+  width: 100%;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 11px 12px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .08s ease;
+}
+
+input:hover,
+select:hover {
+  border-color: rgba(255, 255, 255, 0.20)
+}
+
+input:focus,
+select:focus {
+  border-color: rgba(96, 165, 250, 0.62);
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
+}
+
+.metaLine {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45
+}
+
+/* Buttons */
+.btnRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap
+}
+
+button {
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid transparent;
+  color: var(--text);
+  transition: transform .06s ease, background .15s ease, border-color .15s ease, opacity .15s ease;
+}
+
+button:active {
+  transform: translateY(1px)
+}
+
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  transform: none
+}
+
+.btnPrimary {
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.30), rgba(34, 197, 94, 0.12));
+  border-color: rgba(34, 197, 94, 0.45);
+}
+
+.btnPrimary:hover {
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.40), rgba(34, 197, 94, 0.14))
+}
+
+.btnSecondary {
+  background: rgba(96, 165, 250, 0.16);
+  border-color: rgba(96, 165, 250, 0.40);
+}
+
+.btnSecondary:hover {
+  background: rgba(96, 165, 250, 0.22)
+}
+
+.btnGhost {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.btnGhost:hover {
+  background: rgba(255, 255, 255, 0.10)
+}
+
+.btnTertiary {
+  background: rgba(0, 0, 0, 0.22);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.btnTertiary:hover {
+  background: rgba(0, 0, 0, 0.30)
+}
+
+.linkBtn {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  padding: 10px 12px;
+  text-decoration: none;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.linkBtn:hover {
+  background: rgba(255, 255, 255, 0.10)
+}
+
+.btnSpinner {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-top-color: rgba(255, 255, 255, 0.92);
+  display: none;
+  margin-right: 8px;
+  animation: spin .9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Range + checkbox */
+.rangeRow {
+  display: flex;
+  gap: 10px;
+  align-items: center
+}
+
+input[type="range"] {
+  padding: 0;
+  height: 34px
+}
+
+.chip {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--muted)
+}
+
+.checkRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  user-select: none
+}
+
+.checkRow input {
+  width: auto;
+  accent-color: rgba(96, 165, 250, 0.95)
+}
+
+/* KPI */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px
+}
+
+.kpi {
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.18);
+  padding: 10px 10px;
+}
+
+.kpiLabel {
+  font-size: 11.5px;
+  color: var(--muted)
+}
+
+.kpiValue {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: 0.15px
+}
+
+.legendMini {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px
+}
+
+.legendPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  font-size: 12px;
+  user-select: none;
+}
+
+/* Tabs + notes + table */
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.20);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 14px
+}
+
+.tab {
+  flex: 1;
+  border-radius: 12px;
+  padding: 10px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.tab.active {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.tabPanel {
+  margin-top: 10px
+}
+
+.hidden {
+  display: none
+}
+
+.notes {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: pre-wrap;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 10px;
+  min-height: 88px;
+}
+
+.tableWrap {
+  overflow: auto;
+  max-height: 340px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.18)
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: rgba(0, 0, 0, 0.42);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  text-align: left;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 10px;
+}
+
+tbody td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px;
+  font-size: 12px
+}
+
+tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.03)
+}
+
+/* Map */
+.mapWrap {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+  background: var(--surface2);
+  box-shadow: var(--shadow);
+  width: 100%;
+  height: 100%;
+}
+
+/* Map height: fixed size for stable layout */
+#map {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1
+}
+
+/* Small utility button (used for KPI collapse) */
+.btnMini {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text);
+}
+
+.btnMini:hover {
+  background: rgba(255, 255, 255, 0.08)
+}
+
+.caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 14px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.caret::before {
+  content: "▾";
+}
+
+/* KPI collapse */
+#cardKpi .cardHeader {
+  cursor: pointer
+}
+
+#cardKpi .btnMini {
+  cursor: pointer
+}
+
+.card.isCollapsed .kpiGrid,
+.card.isCollapsed .legendMini {
+  display: none
+}
+
+/* Arrow direction requirement: collapsed = up, expanded = down */
+.card.isCollapsed .caret::before {
+  content: "▴";
+}
+
+.mapOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30
+}
+
+.nowBox {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: min(520px, calc(100% - 28px));
+  pointer-events: none;
+  padding: 11px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(8px);
+}
+
+.nowTitle {
+  font-weight: 900;
+  font-size: 12px;
+  color: #f0f4ff;
+  letter-spacing: 0.2px
+}
+
+.nowLine {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.35
+}
+
+.mapHint {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: min(360px, calc(100% - 28px));
+  pointer-events: none;
+  padding: 11px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+}
+
+.mapHintTitle {
+  font-weight: 900;
+  font-size: 12px;
+  color: #f0f4ff;
+  letter-spacing: 0.2px
+}
+
+.mapHintBody {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.35
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px
+}
+
+.dot.hist {
+  background: var(--blue)
+}
+
+.dot.pred {
+  background: var(--green)
+}
+
+.dot.marker {
+  background: var(--green)
+}
+
+/* Leaflet tooltip style */
+.leaflet-tooltip {
+  background: rgba(0, 0, 0, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #f3f6ff;
+  border-radius: 12px;
+  padding: 8px 10px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+}
+
+.leaflet-tooltip:before {
+  border-top-color: rgba(0, 0, 0, 0.78)
+}
+
+
+/* Bottom section (Notes + Prediction table) */
+.bottomDock {
+  margin-top: 14px
+}
+
+.bottomDock>.card {
+  padding: 0;
+  overflow: hidden
+}
+
+.bottomDock .tabs {
+  position: sticky;
+  top: 0;
+  z-index: 5
+}
+
+.bottomDock .tabPanel {
+  padding: 12px
+}
+
+.bottomDock .notes {
+  border-top: none;
+  padding-top: 0
+}
+
+/* Leaflet controls */
+.leaflet-control-zoom a {
+  background: rgba(0, 0, 0, 0.55) !important;
+  color: #f3f6ff !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: rgba(0, 0, 0, 0.70) !important;
+}
+
+.leaflet-bar {
+  border-radius: 14px !important;
+  overflow: hidden;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.30)
+}
+
+/* Toasts */
+.toastHost {
+  position: fixed;
+  right: 18px;
+  top: 18px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  width: min(420px, calc(100vw - 36px));
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.62);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  padding: 11px 12px;
+  backdrop-filter: blur(10px);
+  animation: toastIn .18s ease-out;
+}
+
+@keyframes toastIn {
+  from {
+    transform: translateY(-6px);
+    opacity: 0
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1
+  }
+}
+
+.toastTitle {
+  font-weight: 900;
+  font-size: 12.5px;
+  letter-spacing: 0.15px
+}
+
+.toastBody {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.35
+}
+
+.toast.ok {
+  border-color: rgba(34, 197, 94, 0.35)
+}
+
+.toast.err {
+  border-color: rgba(251, 191, 36, 0.45)
+}
+
+/* Panel toggle on small screens */
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* 80% of the old 560px */
+  #map {
+    min-height: 448px
+  }
+
+  .panel {
+    order: 2
+  }
+}
+
+@media (max-width: 720px) {
+  .app {
+    padding: 12px
+  }
+
+  .topbar {
+    border-radius: 18px
+  }
+
+  .layout {
+    gap: 12px
+  }
+
+  .panel.isCollapsed {
+    display: none
+  }
+
+  .toastHost {
+    right: 12px;
+    top: 12px
+  }
+}
+
+/* Scrollbars */
+*::-webkit-scrollbar {
+  height: 10px;
+  width: 10px
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.18)
+}
+
+#cardKpi.isCollapsed {
+  padding-bottom: 10px
+}
+
+#cardKpi.isCollapsed .cardHeader {
+  margin-bottom: 0
+}
