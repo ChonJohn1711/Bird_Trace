@@ -17,29 +17,35 @@ def mercator_to_latlon(x: float, y: float) -> Tuple[float, float]:
     lat = (2.0 * math.atan(math.exp(y / R)) - math.pi / 2.0) * 180.0 / math.pi
     return lat, lon
 
-def try_add_latlon(df_xy: pd.DataFrame, x_col: str = "x_m", y_col: str = "y_m") -> pd.DataFrame:
-    out = df_xy.copy()
+from pyproj import CRS, Transformer
+
+WGS84 = CRS("EPSG:4326")
+UTM28N = CRS("EPSG:32628")
+
+# UTM -> WGS84
+to_wgs84 = Transformer.from_crs(UTM28N, WGS84, always_xy=True)
+
+def utm_to_latlon(x_m: float, y_m: float) -> tuple[float, float]:
+    lat, lon = to_wgs84.transform(x_m, y_m)  # always_xy=True => input (x,y), output (lon,lat)
+    return lat, lon
+
+import numpy as np
+
+def try_add_latlon_utm32628(df, x_col="x_m", y_col="y_m"):
+    out = df.copy()
     if x_col not in out.columns or y_col not in out.columns:
         out["lat"] = np.nan
         out["lon"] = np.nan
         return out
 
     lats, lons = [], []
-    ok = True
     for x, y in zip(out[x_col].to_numpy(), out[y_col].to_numpy()):
-        lat, lon = mercator_to_latlon(float(x), float(y))
-        if not (-90.0 <= lat <= 90.0 and -180.0 <= lon <= 180.0):
-            ok = False
-            break
+        lat, lon = utm_to_latlon(float(x), float(y))
         lats.append(lat)
         lons.append(lon)
 
-    if ok:
-        out["lat"] = lats
-        out["lon"] = lons
-    else:
-        out["lat"] = np.nan
-        out["lon"] = np.nan
+    out["lat"] = lats
+    out["lon"] = lons
     return out
 
 def compute_cyclical_time_features(ts: pd.Series) -> pd.DataFrame:

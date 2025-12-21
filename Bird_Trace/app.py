@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -10,6 +10,8 @@ from backend.data_store import DataStore
 from backend.model_loader import load_artifacts, load_model
 from backend.inference import InferenceNotes, build_model_input, run_prediction, assemble_tracks, summarize_prediction
 from backend.utils import floor_to_hour, parse_user_datetime
+
+import io
 
 app = FastAPI(title="Bird Flight Path Prediction Demo")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -143,29 +145,47 @@ def predict(req: PredictRequest):
     }
 
 @app.get("/api/prediction.csv")
-def prediction_csv(datetime: str, model: str | None = None):
+def prediction_csv(datetime: str = Query(...), model: str | None = None):
     req = PredictRequest(datetime=datetime, model=model)
     res = predict(req)
+
     import pandas as pd
     df = pd.DataFrame(res["prediction"])
-    tmp_path = "static/_prediction_export.csv"
-    df.to_csv(tmp_path, index=False)
-    return FileResponse(tmp_path, filename="prediction.csv", media_type="text/csv")
+
+    # Xuất CSV trong RAM (utf-8-sig để Excel đọc tiếng Việt tốt hơn)
+    csv_bytes = df.to_csv(index=False).encode("utf-8-sig")
+
+    headers = {
+        "Content-Disposition": 'attachment; filename="prediction.csv"',
+        "Cache-Control": "no-store",
+    }
+    return Response(
+        content=csv_bytes,
+        media_type="text/csv; charset=utf-8",
+        headers=headers,
+    )
 
 
 @app.get("/api/prediction.xlsx")
-def prediction_xlsx(datetime: str, model: str | None = None):
-    """Export prediction to an Excel file (xlsx)."""
+def prediction_xlsx(datetime: str = Query(...), model: str | None = None):
     req = PredictRequest(datetime=datetime, model=model)
     res = predict(req)
+
     import pandas as pd
     df = pd.DataFrame(res["prediction"])
-    tmp_path = "static/_prediction_export.xlsx"
-    # Uses openpyxl engine (declared in requirements)
-    with pd.ExcelWriter(tmp_path, engine="openpyxl") as writer:
+
+    # Xuất XLSX trong RAM
+    buf = io.BytesIO()
+    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="prediction")
-    return FileResponse(
-        tmp_path,
-        filename="prediction.xlsx",
+    buf.seek(0)
+
+    headers = {
+        "Content-Disposition": 'attachment; filename="prediction.xlsx"',
+        "Cache-Control": "no-store",
+    }
+    return StreamingResponse(
+        buf,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers=headers,
     )

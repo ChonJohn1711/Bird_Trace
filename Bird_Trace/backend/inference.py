@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 
-from .utils import try_add_latlon
+from .utils import try_add_latlon_utm32628
 
 FEATURES = [
     "external-temperature",
@@ -135,8 +135,8 @@ def assemble_tracks(history_window: pd.DataFrame, pred_xy: np.ndarray) -> Tuple[
         "y_m": pred_xy[:,1],
     })
 
-    hist = try_add_latlon(hist)
-    pred = try_add_latlon(pred)
+    hist = try_add_latlon_utm32628(hist)
+    pred = try_add_latlon_utm32628(pred)
     return hist, pred
 
 def summarize_prediction(pred_df: pd.DataFrame) -> Dict[str, float]:
