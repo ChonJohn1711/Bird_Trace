@@ -70,13 +70,13 @@ function setActiveTab(which) {
   panelTable.classList.toggle("hidden", isNotes);
 }
 
-function setStatus(text, kind="info") {
+function setStatus(text, kind = "info") {
   statusBadge.textContent = text;
   statusBadge.style.borderColor = kind === "ok" ? "rgba(110,231,183,0.4)" : (kind === "err" ? "rgba(251,191,36,0.45)" : "rgba(255,255,255,0.12)");
   statusBadge.style.color = kind === "ok" ? "#c6f6df" : (kind === "err" ? "#fde68a" : "#a8b0c6");
 }
 
-function showToast(title, body, kind="ok", ttlMs=2800) {
+function showToast(title, body, kind = "ok", ttlMs = 2800) {
   if (!toastHost) return;
   const el = document.createElement("div");
   el.className = `toast ${kind === "err" ? "err" : "ok"}`;
@@ -86,7 +86,7 @@ function showToast(title, body, kind="ok", ttlMs=2800) {
   `;
   toastHost.appendChild(el);
   setTimeout(() => {
-    try { el.remove(); } catch (_) {}
+    try { el.remove(); } catch (_) { }
   }, ttlMs);
 }
 
@@ -139,7 +139,7 @@ function fmtNum(v) {
 function fmtDistance(m) {
   const n = Number(m);
   if (!Number.isFinite(n)) return "—";
-  if (Math.abs(n) >= 1000) return `${(n/1000).toFixed(2)} km`;
+  if (Math.abs(n) >= 1000) return `${(n / 1000).toFixed(2)} km`;
   return `${n.toFixed(1)} m`;
 }
 
@@ -154,7 +154,7 @@ function setKpis({ modelName, histCount, predCount, totalDist, avgStep } = {}) {
 function setKpiCollapsed(isCollapsed) {
   if (!cardKpi) return;
   cardKpi.classList.toggle("isCollapsed", Boolean(isCollapsed));
-  try { localStorage.setItem("kpiCollapsed", Boolean(isCollapsed) ? "1" : "0"); } catch (_) {}
+  try { localStorage.setItem("kpiCollapsed", Boolean(isCollapsed) ? "1" : "0"); } catch (_) { }
 }
 
 function clearTable() { predTableBody.innerHTML = ""; }
@@ -246,7 +246,7 @@ function ensureMap() {
   // Defensive cleanup: avoid duplicate maps if the script is reloaded (e.g., dev reload)
   const container = document.getElementById("map");
   if (container && container._leaflet_id) {
-    try { container._leaflet_id = null; } catch (_) {}
+    try { container._leaflet_id = null; } catch (_) { }
     container.innerHTML = "";
   }
 
@@ -269,13 +269,13 @@ function ensureMap() {
       continuousWorld: false,
       bounds: WORLD_BOUNDS
     }).addTo(map);
-  } catch (_) {}
+  } catch (_) { }
 
   map.setView([0, 0], 2);
 
   // Extra guard: keep the viewport inside the single-world bounds even during drag.
   const clampToWorld = () => {
-    try { map.panInsideBounds(worldBounds, { animate: false }); } catch (_) {}
+    try { map.panInsideBounds(worldBounds, { animate: false }); } catch (_) { }
   };
   map.on("drag", clampToWorld);
   map.on("moveend", clampToWorld);
@@ -347,7 +347,7 @@ function maybeFollow(cur) {
     if (!inner.contains(ll)) {
       map.panTo(ll, { animate: true, duration: 0.20 });
     }
-  } catch (_) {}
+  } catch (_) { }
 }
 
 function densifyAnimationPath(rawPoints, histLen) {
@@ -424,19 +424,19 @@ function setTracks(history, prediction) {
   if (histPts.length > 0 || predPts.length > 0) {
     renderTrack(histPts, histLayer, HIST_COLOR);
     renderTrack(predPts, predLayer, PRED_COLOR);
-        // Connect last history point to first prediction point with prediction color
-        if (histPts.length > 0 && predPts.length > 0) {
-          const a = histPts[histPts.length - 1];
-          const b = predPts[0];
-          if (Number.isFinite(Number(a.lat)) && Number.isFinite(Number(a.lon)) && Number.isFinite(Number(b.lat)) && Number.isFinite(Number(b.lon))) {
-            L.polyline([[Number(a.lat), Number(a.lon)], [Number(b.lat), Number(b.lon)]], {
-              color: PRED_COLOR,
-              weight: 3,
-              opacity: 0.85,
-              lineJoin: "round"
-            }).addTo(predLayer);
-          }
-        }
+    // Connect last history point to first prediction point with prediction color
+    if (histPts.length > 0 && predPts.length > 0) {
+      const a = histPts[histPts.length - 1];
+      const b = predPts[0];
+      if (Number.isFinite(Number(a.lat)) && Number.isFinite(Number(a.lon)) && Number.isFinite(Number(b.lat)) && Number.isFinite(Number(b.lon))) {
+        L.polyline([[Number(a.lat), Number(a.lon)], [Number(b.lat), Number(b.lon)]], {
+          color: PRED_COLOR,
+          weight: 3,
+          opacity: 0.85,
+          lineJoin: "round"
+        }).addTo(predLayer);
+      }
+    }
 
     const parseTs = (ts) => {
       if (!ts) return null;
@@ -487,7 +487,7 @@ function setTracks(history, prediction) {
 
   const minX = Math.min(...xs), maxX = Math.max(...xs);
   const minY = Math.min(...ys), maxY = Math.max(...ys);
-  const norm = (x,a,b) => (b-a) === 0 ? 0 : ((x-a)/(b-a))*140 - 70;
+  const norm = (x, a, b) => (b - a) === 0 ? 0 : ((x - a) / (b - a)) * 140 - 70;
 
   const make = (rows) => rows.map(r => ({
     lat: norm(Number(r.y_m), minY, maxY),
@@ -549,14 +549,14 @@ function setTracks(history, prediction) {
 
 function resetView() {
   if (!map || !lastFitBounds) return;
-  try { map.fitBounds(lastFitBounds); } catch (_) {}
+  try { map.fitBounds(lastFitBounds); } catch (_) { }
 }
 
 async function fetchJSON(url, opts) {
   const res = await fetch(url, opts);
   const txt = await res.text();
   let data;
-  try { data = JSON.parse(txt); } catch (_) { data = { ok:false, error: txt }; }
+  try { data = JSON.parse(txt); } catch (_) { data = { ok: false, error: txt }; }
   if (!res.ok) {
     const detail = (data && data.detail) ? data.detail : (data && data.error) ? data.error : txt;
     throw new Error(detail || `HTTP ${res.status}`);
@@ -700,7 +700,7 @@ speedRange.addEventListener("input", () => {
     try {
       const saved = localStorage.getItem("kpiCollapsed");
       if (saved === "1") setKpiCollapsed(true);
-    } catch (_) {}
+    } catch (_) { }
     syncKpiAria();
 
     if (btnToggleKpi) {
