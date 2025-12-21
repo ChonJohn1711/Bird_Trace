@@ -7,4 +7,4 @@ scikit-learn==1.5.1
 xgboost==2.1.1
 python-multipart==0.0.9
 openpyxl==3.1.5
-pyproj==3.2.1
+pyproj==3.7.2
