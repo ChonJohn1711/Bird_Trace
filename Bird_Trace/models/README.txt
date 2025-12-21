@@ -1,0 +1,1 @@
+Các model đã được train và artifacts nên được bỏ vào thư mục /models
