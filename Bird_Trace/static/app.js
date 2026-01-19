@@ -567,12 +567,12 @@ async function fetchJSON(url, opts) {
 async function loadDatasetInfo() {
   const info = await fetchJSON("/api/dataset_info");
   if (!info.ok) {
-    setStatus("Dataset chưa sẵn sàng", "err");
+    setStatus("Dataset hasn't already yet", "err");
     datasetInfoEl.textContent = info.error || "Dataset load failed.";
     btnPredict.disabled = true;
     return;
   }
-  setStatus("Sẵn sàng", "ok");
+  setStatus("Already", "ok");
   datasetInfoEl.textContent = `Dataset: ${info.path} | rows=${info.rows} | range=${info.start_ts} → ${info.end_ts}`;
   if (!dtInput.value) dtInput.value = info.default_datetime;
 }
@@ -583,10 +583,10 @@ async function loadModels() {
   if (!m.models || m.models.length === 0) {
     const opt = document.createElement("option");
     opt.value = "";
-    opt.textContent = "Không tìm thấy model trong models/";
+    opt.textContent = "Model not found in models/";
     modelSelect.appendChild(opt);
     btnPredict.disabled = true;
-    setStatus("Thiếu model", "err");
+    setStatus("Model missed", "err");
     return;
   }
   for (const name of m.models) {
@@ -611,7 +611,7 @@ async function doPredict() {
 
   btnPredict.disabled = true;
   if (predictSpinner) predictSpinner.style.display = "inline-block";
-  setStatus("Đang dự đoán...", "info");
+  setStatus("Predicting...", "info");
 
   try {
     const res = await fetchJSON("/api/predict", {
@@ -620,7 +620,7 @@ async function doPredict() {
       body: JSON.stringify(payload)
     });
 
-    setStatus("Dự đoán xong", "ok");
+    setStatus("Prediction Completed", "ok");
     setTracks(res.history || [], res.prediction || []);
     fillTable(res.prediction || []);
 
@@ -633,7 +633,7 @@ async function doPredict() {
     });
 
     if (res.notes && res.notes.messages) {
-      notesEl.textContent = "Ghi chú\n" + res.notes.messages.join("\n");
+      notesEl.textContent = "Note\n" + res.notes.messages.join("\n");
     }
 
     const q = new URLSearchParams({ datetime: payload.datetime, model: payload.model || "" });
@@ -649,11 +649,11 @@ async function doPredict() {
     btnPause.disabled = true;
     if (btnResetView) btnResetView.disabled = !lastFitBounds;
 
-    showToast("Dự đoán xong", "Có thể bấm Play để xem marker chạy.", "ok");
+    showToast("Prediction Completed", "Click Play for seeing marker runs.", "ok");
   } catch (e) {
-    setStatus("Lỗi dự đoán", "err");
-    notesEl.textContent = "Lỗi\n" + (e && e.message ? e.message : String(e));
-    showToast("Lỗi", (e && e.message) ? e.message : String(e), "err", 3800);
+    setStatus("Prediction Error", "err");
+    notesEl.textContent = "Error\n" + (e && e.message ? e.message : String(e));
+    showToast("Error", (e && e.message) ? e.message : String(e), "err", 3800);
   } finally {
     btnPredict.disabled = false;
     if (predictSpinner) predictSpinner.style.display = "none";
@@ -683,7 +683,7 @@ speedRange.addEventListener("input", () => {
   ensureMap();
   setActiveTab("notes");
   speedLabel.textContent = `${Number(speedRange.value) || 1}x`;
-  setStatus("Đang tải...", "info");
+  setStatus("Loading...", "info");
   try {
     // KPI collapse state (persisted)
     const syncKpiAria = () => {
@@ -736,8 +736,8 @@ speedRange.addEventListener("input", () => {
       });
     }
   } catch (e) {
-    setStatus("Lỗi khởi tạo", "err");
-    notesEl.textContent = "Lỗi\n" + (e && e.message ? e.message : String(e));
-    showToast("Lỗi khởi tạo", (e && e.message) ? e.message : String(e), "err", 4200);
+    setStatus("Constructor Error", "err");
+    notesEl.textContent = "Error\n" + (e && e.message ? e.message : String(e));
+    showToast("Constructor Error", (e && e.message) ? e.message : String(e), "err", 4200);
   }
 })();
