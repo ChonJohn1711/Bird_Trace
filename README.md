@@ -1,55 +1,62 @@
+Đây là file Markdown (.md) bản tiếng Anh để bạn copy/paste:
+
+[Download the .md file](sandbox:/mnt/data/Bird_Flight_Path_Prediction_Demo_README_EN.md)
+
+Nếu bạn muốn copy trực tiếp, nội dung cũng nằm dưới đây:
+
+````md
 # Bird Flight Path Prediction Demo (Web)
 
-Ứng dụng web dự đoán đường bay chim từ dữ liệu lịch sử và hiển thị quỹ đạo dự đoán kèm animation (marker chạy theo đường bay).
+A web application that predicts a bird’s flight path from historical data and displays the predicted trajectory with an animation (a marker moving along the flight path).
 
-## Mục tiêu
-- Input: 48 giờ dữ liệu lịch sử (`x_m`, `y_m` và các yếu tố ảnh hưởng).
-- Output: dự đoán vị trí 24 giờ tiếp theo.
-- UI: hiển thị đường bay và animation.
+## Objective
+- Input: 48 hours of historical data (`x_m`, `y_m`, and influencing factors).
+- Output: predicted positions for the next 24 hours.
+- UI: display the flight path and animation.
 
-## Chế độ hiển thị bản đồ
-Frontend lựa chọn cách render theo dạng dữ liệu đầu vào:
-- Nếu `x_m/y_m` giống Web Mercator (|x|, |y| ≤ 20037508) thì chuyển sang lat/lon và hiển thị trên OpenStreetMap (cần internet).
-- Nếu `x_m/y_m` giống lat/lon (đơn vị độ) thì hiển thị trực tiếp.
-- Nếu không khớp, fallback sang mặt phẳng XY (CRS.Simple).
+## Map display modes
+The frontend chooses the rendering method based on the input data format:
+- If `x_m/y_m` looks like Web Mercator (|x|, |y| ≤ 20037508), it converts to lat/lon and displays on OpenStreetMap (internet required).
+- If `x_m/y_m` looks like lat/lon (in degrees), it displays directly.
+- If neither matches, it falls back to a simple XY plane (CRS.Simple).
 
-Lưu ý: Cơ chế nhận biết và chuyển đổi phụ thuộc vào code frontend/backend. Hãy đối chiếu với `static/` và `app.py` để đảm bảo khớp 100%.
+Note: The detection and conversion mechanism depends on the frontend/backend code. Please cross-check `static/` and `app.py` to ensure a 100% match.
 
-## Cấu trúc thư mục
-- `app.py`: FastAPI backend + serve static frontend
+## Directory structure
+- `app.py`: FastAPI backend + serves the static frontend
 - `static/`: HTML/CSS/JS (Leaflet)
-- `models/`: model và preprocessing artifacts (scaler/encoder)
+- `models/`: models and preprocessing artifacts (scalers/encoders)
 
-## Model (đã train) — tải về
+## Model (pre-trained) — download
 - LinearRegression_model_48-24: [here](https://drive.google.com/file/d/18PwyHzJKXKjCZi7bmIdFX3YCRUK7_eG8/view?usp=sharing)
 - KNN_model_48-24: [here](https://drive.google.com/file/d/1GoMDA2_zW-Sp1GqqvcrjbWZw6p5PjDep/view?usp=sharing)
 - MLP_model_48-24: [here](https://drive.google.com/file/d/145zxd41g_gEJZiEmMWOpZnOseXCQ5qgY/view?usp=sharing)
 - RandomForest_model_48-24: [here](https://drive.google.com/file/d/1_rpf9QF_q8ACAAxK-6AUgi3FKyCC-uFF/view?usp=sharing)
 - XGBoost_model_48-24: [here](https://drive.google.com/file/d/1Uah9DVLhmp6MxZrLDxYiHpqVSEyYlf8W/view?usp=sharing)
 
-## Dùng model thật (joblib/pickle)
+## Using real models (joblib/pickle)
 
-Backend có thể hỗ trợ load model từ thư mục `models/` (cần đối chiếu `app.py` để xác minh chính xác thứ tự ưu tiên và điều kiện fallback):
+The backend can support loading models from the `models/` directory (please verify `app.py` to confirm the exact priority order and fallback conditions):
 
-* `*.joblib`
-* `*.pkl`
+- `*.joblib`
+- `*.pkl`
 
-Nếu inference lỗi, ứng dụng có thể fallback sang heuristic predictor để demo vẫn hoạt động (cần đối chiếu code để xác minh).
+If inference fails, the app may fall back to a heuristic predictor so the demo still works (verify in the code to confirm).
 
-## Lỗi “288 vs 816 features” (nguyên nhân)
+## “288 vs 816 features” error (cause)
 
-Pipeline tạo input theo cửa sổ 48 giờ và flatten:
+The pipeline creates input using a 48-hour sliding window and flattens it:
 
-* Mỗi timestep gồm `features + target` = 15 + 2 = 17 cột
-* `INPUT_WINDOW = 48`
+- Each timestep includes `features + target` = 15 + 2 = 17 columns
+- `INPUT_WINDOW = 48`
 
-Input cho model dạng ML cổ điển: 48 × 17 = 816 features
+Classic ML model input: 48 × 17 = 816 features
 
-Bản demo cũ chỉ gửi 6 cột / timestep: 48 × 6 = 288
+The old demo only sent 6 columns per timestep: 48 × 6 = 288
 
-## Schema input (đúng thứ tự pipeline)
+## Input schema (correct pipeline order)
 
-Mỗi dòng lịch sử được chuẩn hóa theo thứ tự `df[features + target]`:
+Each historical row is standardized in the order `df[features + target]`:
 
 1. `external_temperature`
 2. `ground_speed`
@@ -64,56 +71,57 @@ Mỗi dòng lịch sử được chuẩn hóa theo thứ tự `df[features + tar
 11. `sin_month`
 12. `cos_month`
 13. `distance`
-14. `time_of_day_code` (từ `time_of_day`)
-15. `season_code` (từ `season`)
+14. `time_of_day_code` (from `time_of_day`)
+15. `season_code` (from `season`)
 16. `x_m`
 17. `y_m`
 
-Demo lấy 48 dòng cuối, padding nếu thiếu, rồi flatten thành shape `(1, 816)` (cần đối chiếu code để xác minh padding rule).
+The demo takes the last 48 rows, pads if needed, then flattens to shape `(1, 816)` (verify the padding rule in the code).
 
 ## Upload CSV
 
-CSV có thể dùng header giống dataset. Ứng dụng có thể hỗ trợ normalize tên cột (ví dụ chấp nhận `-` và `:`), nhưng cần đối chiếu code để xác minh.
+The CSV can use the same header as the dataset. The app may support normalizing column names (e.g., accepting `-` and `:`), but you should verify this in the code.
 
-Khuyến nghị tối thiểu:
+Minimum recommended fields:
 
-* `timestamp`, `x_m`, `y_m`
+- `timestamp`, `x_m`, `y_m`
 
-Nếu thiếu các cột sin/cos, ứng dụng có thể tự sinh từ `timestamp` (cần đối chiếu code để xác minh công thức và chu kỳ).
-Nếu thiếu `distance`, ứng dụng có thể tự tính từ `x_m/y_m` (cần đối chiếu code để xác minh cách tính).
+If sin/cos columns are missing, the app may generate them from `timestamp` (verify the formulas and periodicity in the code).  
+If `distance` is missing, the app may compute it from `x_m/y_m` (verify the computation method in the code).
 
-## Preprocessing (để khớp lúc train)
+## Preprocessing (to match training)
 
-Pipeline (theo mô tả) sử dụng:
+The (described) pipeline uses:
 
-* StandardScaler: `external-temperature`, `gls:light-level`, `distance`
-* RobustScaler: `ground-speed`, `height-above-msl`
-* StandardScaler cho target: `x_m`, `y_m`
-* LabelEncoder: `time_of_day`, `season`
+- StandardScaler: `external-temperature`, `gls:light-level`, `distance`
+- RobustScaler: `ground-speed`, `height-above-msl`
+- StandardScaler for targets: `x_m`, `y_m`
+- LabelEncoder: `time_of_day`, `season`
 
-Để backend tái hiện đúng preprocess, hãy lưu artifacts vào `models/`:
+To allow the backend to reproduce preprocessing correctly, save artifacts into `models/`:
 
 ```python
 import joblib
 
 joblib.dump(scalers_encoders, "models/preprocessing.joblib")
 joblib.dump(scaler_target, "models/scaler_target.joblib")
-```
+````
 
-Backend sẽ tự tìm:
+The backend will automatically look for:
 
 * `models/preprocessing.joblib`
 * `models/scaler_target.joblib`
 
-Nếu thiếu 2 file này, demo có thể vẫn chạy model nhưng bỏ qua scaling/inverse (và hiển thị ghi chú trong UI). Cần đối chiếu code để xác minh hành vi.
+If these two files are missing, the demo may still run the model but skip scaling/inverse-scaling (and show a note in the UI). Verify the behavior in the code.
 
-### Artifacts (đã lưu) — tải về
+### Artifacts (already saved) — download
 
 * preprocessing: [here](https://drive.google.com/file/d/1Ea4Vu8Tn_w_buWuPhX0AG9SyCEaf_o8a/view?usp=sharing)
 * scaler_target: [here](https://drive.google.com/file/d/1mxfsw5o5RcavgJ_8x98h4EkJX0IkNI6H/view?usp=sharing)
 
-## Chạy local
-Yêu cầu: Python 3.10+ (khuyến nghị)
+## Run locally
+
+Requirements: Python 3.10+ (recommended)
 
 ```bash
 cd Bird_Trace
@@ -122,17 +130,14 @@ source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
 pip install -r requirements.txt
 uvicorn app:app --reload
-````
+```
 
-Mở: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+Open: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ## API
 
-* `GET /api/health`: trạng thái model + preprocessing artifacts
-* `GET /api/sample`: dữ liệu mẫu 48h
-* `POST /api/predict`: chạy dự đoán
+* `GET /api/health`: model + preprocessing artifacts status
+* `GET /api/sample`: 48h sample data
+* `POST /api/predict`: run prediction
 
-Gợi ý: nếu dùng FastAPI, có thể kiểm tra OpenAPI tại `/docs` để đảm bảo README khớp schema request/response.
-
-```
-```
+Tip: if you use FastAPI, you can check the OpenAPI docs at `/docs` to ensure the README matches the request/response schema.
