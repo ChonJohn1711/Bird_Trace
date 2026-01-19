@@ -1,10 +1,3 @@
-Đây là file Markdown (.md) bản tiếng Anh để bạn copy/paste:
-
-[Download the .md file](sandbox:/mnt/data/Bird_Flight_Path_Prediction_Demo_README_EN.md)
-
-Nếu bạn muốn copy trực tiếp, nội dung cũng nằm dưới đây:
-
-````md
 # Bird Flight Path Prediction Demo (Web)
 
 A web application that predicts a bird’s flight path from historical data and displays the predicted trajectory with an animation (a marker moving along the flight path).
